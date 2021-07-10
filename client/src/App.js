@@ -6,8 +6,10 @@ import 'react-drop-zone/dist/styles.css';
 import "bootstrap/dist/css/bootstrap.css";
 import {FileIcon, defaultStyles} from 'react-file-icon';
 import { Table } from 'reactstrap';
-
 import "./App.css";
+import { create } from 'ipfs-http-client'
+
+const client = create('https://ipfs.infura.io:5001/api/v0')
 
 class App extends Component {
   state = { dappDrive: [], web3: null, accounts: null, contract: null };
@@ -56,14 +58,23 @@ class App extends Component {
   }
 
   onDrop = async (file) => {
+    const { accounts, contract } = this.state;
     try {
-      const {accounts, contract} = this.state;
-    } catch (err){
-      console.log(err);
-    }
+      const added = await client.add(file)
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      console.log("url is: ",url);
+      const timestamp = Math.round(+new Date() / 1000);
+      const type = file.name.substr(file.name.lastIndexOf(".") + 1);
+      let uploaded = await contract.methods.add(added.path, file.name, type, timestamp).send({from: accounts[0], gas: 300000});
+      console.log(uploaded);
+      this.getFiles();
+    } catch (error) {
+      console.log('Error uploading file: ', error)
+    }  
   }
 
   render() {
+    const {dappDrive} = this.state;
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
@@ -86,17 +97,22 @@ class App extends Component {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              {dappDrive !== [] ? dappDrive.map((item, key)=> {
+                var fileDate = new Date(item[3] * 1000).toUTCString();
+                return(
+              <tr key="key">
                 <td className="file">
-                  <FileIcon extension="docx" {...defaultStyles.docx} />
+                  <FileIcon extension={item[2]} {...defaultStyles[item[2]]} />
                 </td>
                 <td style={{textAlign: "left"}}>
-                  test.docx
+                  <a target="_blank" rel="noopener noreferrer" href={"https://ipfs.io/ipfs/"+item[0]}>{item[1]}</a>
                 </td>
                 <td style={{textAlign: "right"}}>
-                  2021/07/10
+                  {fileDate}
                 </td>
               </tr>
+                )    
+              }) : null}
             </tbody>
           </Table>
         </div>

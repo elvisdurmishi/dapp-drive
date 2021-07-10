@@ -58,7 +58,7 @@ class App extends Component {
       }
       this.setState({dappDrive: files});
     } catch (err){
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -67,14 +67,12 @@ class App extends Component {
     try {
       const added = await client.add(file)
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      console.log("url is: ",url);
       const timestamp = Math.round(+new Date() / 1000);
       const type = file.name.substr(file.name.lastIndexOf(".") + 1);
       let uploaded = await contract.methods.add(added.path, file.name, type, timestamp).send({from: accounts[0], gas: 300000});
-      console.log(uploaded);
       this.getFiles();
     } catch (error) {
-      console.log('Error uploading file: ', error)
+      console.error('Error uploading file: ', error)
     }  
   }
 

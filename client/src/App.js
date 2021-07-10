@@ -5,14 +5,18 @@ import { StyledDropZone } from 'react-drop-zone';
 import 'react-drop-zone/dist/styles.css';
 import "bootstrap/dist/css/bootstrap.css";
 import {FileIcon, defaultStyles} from 'react-file-icon';
+import paperClipPng from "./assets/PaperClip.png";
+import paperClipGif from "./assets/PaperCliipp.gif";
+import cross from "./assets/cross.svg";
+import tick from "./assets/tick-1.svg";
 import { Table } from 'reactstrap';
 import "./App.css";
 import { create } from 'ipfs-http-client'
 
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
-class App extends Component {
-  state = { dappDrive: [], web3: null, accounts: null, contract: null };
+class App extends Component {  
+  state = { dappDrive: [], web3: null, accounts: null, contract: null, display: "image" };
 
   componentDidMount = async () => {
     try {
@@ -65,26 +69,75 @@ class App extends Component {
   onDrop = async (file) => {
     const { accounts, contract } = this.state;
     try {
-      const added = await client.add(file)
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      const added = await client.add(file);
+      this.setState({display: "gif"});
       const timestamp = Math.round(+new Date() / 1000);
       const type = file.name.substr(file.name.lastIndexOf(".") + 1);
-      let uploaded = await contract.methods.add(added.path, file.name, type, timestamp).send({from: accounts[0], gas: 300000});
+      let uploaded = await contract.methods.add(added.path, file.name, type, timestamp).send({from: accounts[0], gas: 6721975});
+      if(uploaded){
+        this.setState({display: "tick"});
+      }
+      setTimeout(() => {
+        this.setState({display: "image"});
+      }, 2000)      
       this.getFiles();
     } catch (error) {
       console.error('Error uploading file: ', error)
+      this.setState({display: "cross"});
+      setTimeout(() => {
+        this.setState({display: "image"});
+      }, 3000)
     }  
   }
 
-  render() {
+  renderNoFiles() {
+    return (
+      <tr key={"no-files"}>
+        <td colSpan="3">Ju akoma nuk keni ngarkuar ndonje skedar...</td>
+      </tr>
+    )
+  }
+
+  renderFiles(){
     const {dappDrive} = this.state;
+    let files = [];
+    if(dappDrive) {
+      dappDrive.forEach(item => {
+        var fileDate = new Date(item[3] * 1000).toUTCString();
+        files.push(
+          <tr key={`file-${item[3]}-${item[1]}`}>
+            <td className="file">
+              <FileIcon extension={item[2]} {...defaultStyles[item[2]]} />
+            </td>
+            <td style={{textAlign: "left"}}>
+              <a target="_blank" rel="noopener noreferrer" href={"https://ipfs.io/ipfs/"+item[0]}>{item[1]}</a>
+            </td>
+            <td style={{textAlign: "right"}}>
+              {fileDate}
+            </td>
+          </tr>
+        )
+      });
+    }
+    return files;
+  }
+
+  render() {
+    const {dappDrive, display} = this.state;
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
       <div className="App">
         <div className="container pt-3">
-          <StyledDropZone onDrop={this.onDrop} />
+          <StyledDropZone onDrop={this.onDrop}>
+            <div style={{minWidth: "100px"}}>
+              {display === "image" && <img src={paperClipPng} alt="link" width="100px" />}
+              {display === "gif" && <img src={paperClipGif} alt="link" width="100px" />}
+              {display === "tick" && <object data={tick} aria-label="" width="100px" />}
+              {display === "cross" && <object data={cross} aria-label="" width="100px" />}
+            </div>
+          </StyledDropZone>
           <Table>
             <thead>
               <tr>
@@ -100,22 +153,8 @@ class App extends Component {
               </tr>
             </thead>
             <tbody>
-              {dappDrive !== [] ? dappDrive.map((item, key)=> {
-                var fileDate = new Date(item[3] * 1000).toUTCString();
-                return(
-              <tr key="key">
-                <td className="file">
-                  <FileIcon extension={item[2]} {...defaultStyles[item[2]]} />
-                </td>
-                <td style={{textAlign: "left"}}>
-                  <a target="_blank" rel="noopener noreferrer" href={"https://ipfs.io/ipfs/"+item[0]}>{item[1]}</a>
-                </td>
-                <td style={{textAlign: "right"}}>
-                  {fileDate}
-                </td>
-              </tr>
-                )    
-              }) : null}
+              {dappDrive.length === 0 && this.renderNoFiles()}
+              {this.renderFiles()}
             </tbody>
           </Table>
         </div>

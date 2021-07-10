@@ -30,7 +30,7 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      this.setState({ web3, accounts, contract: instance }, this.getFiles);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -41,11 +41,26 @@ class App extends Component {
   };
 
   getFiles = async () => {
-
+    try {
+      const {accounts, contract} = this.state;
+      let filesLength = await contract.methods.getLength().call({from: accounts[0]});
+      let files = [];
+      for(let i = 0; i < filesLength; i++){
+        let file = await contract.methods.getFile(i).call({from: accounts[0]})
+        files.push(file);
+      }
+      this.setState({dappDrive: files});
+    } catch (err){
+      console.log(err);
+    }
   }
 
-  onDrop = async () => {
-
+  onDrop = async (file) => {
+    try {
+      const {accounts, contract} = this.state;
+    } catch (err){
+      console.log(err);
+    }
   }
 
   render() {
@@ -55,7 +70,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="container pt-3">
-          <StyledDropZone />
+          <StyledDropZone onDrop={this.onDrop} />
           <Table>
             <thead>
               <tr>

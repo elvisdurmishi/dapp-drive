@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^5.0.2",
+    "ipfs-http-client": "^50.1.2",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-drop-zone": "^4.3.2",

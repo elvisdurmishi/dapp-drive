@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import DappDriveContract from "./contracts/DappDrive.json";
 import getWeb3 from "./getWeb3";
 import { StyledDropZone } from 'react-drop-zone';
+import 'react-drop-zone/dist/styles.css';
+import "bootstrap/dist/css/bootstrap.css";
+import {FileIcon, defaultStyles} from 'react-file-icon';
 import { Table } from 'reactstrap';
 
 import "./App.css";
@@ -51,8 +54,36 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <div className="container">
+        <div className="container pt-3">
           <StyledDropZone />
+          <Table>
+            <thead>
+              <tr>
+                <th style={{width: "15%"}} scope="row">
+                  Tipi i skedarit
+                </th>
+                <th style={{textAlign: "left"}}>
+                  Emri
+                </th>
+                <th style={{textAlign: "right"}}>
+                  Data
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="file">
+                  <FileIcon extension="docx" {...defaultStyles.docx} />
+                </td>
+                <td style={{textAlign: "left"}}>
+                  test.docx
+                </td>
+                <td style={{textAlign: "right"}}>
+                  2021/07/10
+                </td>
+              </tr>
+            </tbody>
+          </Table>
         </div>
       </div>
     );

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import DappDriveContract from "./contracts/DappDrive.json";
 import getWeb3 from "./getWeb3";
-import {StyledDropZone} from 'react-drop-zone';
-import {Table } from reactstrap;
+import { StyledDropZone } from 'react-drop-zone';
+import { Table } from 'reactstrap';
 
 import "./App.css";
 

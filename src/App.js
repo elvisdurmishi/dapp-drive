@@ -5,10 +5,14 @@ import { StyledDropZone } from 'react-drop-zone';
 import 'react-drop-zone/dist/styles.css';
 import "bootstrap/dist/css/bootstrap.css";
 import {FileIcon, defaultStyles} from 'react-file-icon';
+import logo from "./assets/logo.png";
 import paperClipPng from "./assets/PaperClip.png";
 import paperClipGif from "./assets/PaperCliipp.gif";
 import cross from "./assets/cross.svg";
 import tick from "./assets/tick-1.svg";
+import metamaskConfigBanner from "./assets/ConfigMetamask.png";
+import setupMetamask from "./assets/No_Metamask.png";
+import banner from "./assets/banner.png";
 import { Table } from 'reactstrap';
 import "./App.css";
 import { create } from 'ipfs-http-client'
@@ -16,7 +20,7 @@ import { create } from 'ipfs-http-client'
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
 class App extends Component {  
-  state = { dappDrive: [], web3: null, accounts: null, contract: null, display: "image" };
+  state = { dappDrive: [], web3: null, accounts: null, contract: null, display: "image", state: "normal", tableState: null };
 
   componentDidMount = async () => {
     try {
@@ -37,6 +41,12 @@ class App extends Component {
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.getFiles);
+      window.ethereum.on('chainChanged', async () => {
+        window.location.reload();
+        const changedAccounts = await web3.eth.getAccounts();
+        this.setState({accounts: changedAccounts});
+        this.getFiles();
+      });
       window.ethereum.on('accountsChanged', async () => {
         const changedAccounts = await web3.eth.getAccounts();
         this.setState({accounts: changedAccounts});
@@ -44,10 +54,7 @@ class App extends Component {
       })
     } catch (error) {
       // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
+      this.setState({state: "failed-account"})
     }
   };
 
@@ -62,7 +69,7 @@ class App extends Component {
       }
       this.setState({dappDrive: files});
     } catch (err){
-      console.error(err);
+      this.setState({tableState: "failed-files"})
     }
   }
 
@@ -82,7 +89,6 @@ class App extends Component {
       }, 2000)      
       this.getFiles();
     } catch (error) {
-      console.error('Error uploading file: ', error)
       this.setState({display: "cross"});
       setTimeout(() => {
         this.setState({display: "image"});
@@ -90,10 +96,31 @@ class App extends Component {
     }  
   }
 
+  renderErrorAccount() {
+    return (
+      <div className="d-flex">
+        <img src={setupMetamask} className="w-50" alt="banner"></img>
+        <div className="d-flex flex-column align-items-center justify-content-center w-50">
+          <h1>Download Metamask</h1>
+          <p>You must have Metamask to use this Dapp. You can download Metamask <a target="_blank" rel="noopener noreferrer" href="https://metamask.io/">here.</a></p>
+          <p>Please reload this window after you downloaded and installed Metamask.</p>
+        </div>
+      </div>
+    )
+  }
+
   renderNoFiles() {
     return (
       <tr key={"no-files"}>
         <td colSpan="3">Ju akoma nuk keni ngarkuar ndonje skedar...</td>
+      </tr>
+    )
+  }
+
+  renderErrorLoadingFiles() {
+    return (
+      <tr key={"error-loading-files"}>
+        <td colSpan="3">Ndodhi nje gabim gjate ngarkimit te skedareve! Provoni perseri...</td>
       </tr>
     )
   }
@@ -123,41 +150,64 @@ class App extends Component {
   }
 
   render() {
-    const {dappDrive, display} = this.state;
+    const {dappDrive, display, state, tableState} = this.state;
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return (
+        <div className="overflow-hidden viewport-height">
+          <div className="d-flex">
+            <img src={metamaskConfigBanner} className="w-50" alt="banner"></img>
+            <div className="d-flex flex-column align-items-center justify-content-center w-50">
+              <h1>Metamask Config</h1>
+              <p>Please configure your metamask with one of your accounts in Rinkeby Test Network</p>
+            </div>
+          </div>
+        </div>
+      )
     }
     return (
       <div className="App">
-        <div className="container pt-3">
-          <StyledDropZone onDrop={this.onDrop}>
-            <div style={{minWidth: "100px"}}>
-              {display === "image" && <img src={paperClipPng} alt="link" width="100px" />}
-              {display === "gif" && <img src={paperClipGif} alt="link" width="100px" />}
-              {display === "tick" && <object data={tick} aria-label="" width="100px" />}
-              {display === "cross" && <object data={cross} aria-label="" width="100px" />}
-            </div>
-          </StyledDropZone>
-          <Table>
-            <thead>
-              <tr>
-                <th style={{width: "15%"}} scope="row">
-                  Tipi i skedarit
-                </th>
-                <th style={{textAlign: "left"}}>
-                  Emri
-                </th>
-                <th style={{textAlign: "right"}}>
-                  Data
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {dappDrive.length === 0 && this.renderNoFiles()}
-              {this.renderFiles()}
-            </tbody>
-          </Table>
+        <div className="overflow-hidden viewport-height">
+          {state === "failed-account" && this.renderErrorAccount()}
         </div>
+        {state === "normal" &&
+        (<div className="mb-5">
+          <div className="position-relative">
+            <div className="logo-container">
+              <img className="logo" src={logo} width="100px" alt="logo"></img>
+            </div>
+            <img className="banner-img" src={banner} alt="banner"></img>
+            <StyledDropZone className="file-input" onDrop={this.onDrop}>
+                <div className="min-width-100">
+                  {display === "image" && <img src={paperClipPng} alt="link" width="100px" />}
+                  {display === "gif" && <img src={paperClipGif} alt="link" width="100px" />}
+                  {display === "tick" && <object data={tick} aria-label="" width="100px" />}
+                  {display === "cross" && <object data={cross} aria-label="" width="100px" />}
+                </div>
+              </StyledDropZone>
+          </div>
+          <div className="container mt-6">
+            <Table>
+              <thead>
+                <tr>
+                  <th style={{width: "15%"}} scope="row">
+                    Tipi i skedarit
+                  </th>
+                  <th style={{textAlign: "left"}}>
+                    Emri
+                  </th>
+                  <th style={{textAlign: "right"}}>
+                    Data
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableState === "failed-files" && this.renderErrorLoadingFiles()}
+                {dappDrive.length === 0 && this.renderNoFiles()}
+                {this.renderFiles()}
+              </tbody>
+            </Table>
+          </div>
+        </div>)}
       </div>
     );
   }

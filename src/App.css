@@ -21,6 +21,50 @@
   color: #09d3ac;
 }
 
+.logo-container{
+  background-color: #fff;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 150px;
+  border-radius: 25px;
+}
+
+.banner-img{
+  width: 100%;
+}
+
+.file-input {
+  height: 170px;
+  max-height: 170px;
+  width: 40%;
+  padding: 32px;
+  outline: 5px solid #fff;  
+  background-color: #fff;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.file-input:hover{
+  background-color: #fff;
+  border-width: 2px;
+  padding: 33px;
+}
+
+.min-width-100{
+  min-width: 100px;
+}
+
+.viewport-height{
+  max-height: 100vh;
+}
+
+.mt-6{
+  margin-top: 5rem !important;
+}
+
 .file svg {
   width: 25px;
 }

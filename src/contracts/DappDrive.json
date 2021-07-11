@@ -2422,12 +2422,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x03F11A007c32e6e8b7a8D01536873867169249FD",
-      "transactionHash": "0x4eaadf39b141ae2a2516fc0b5d7d52f925c02b3c430ab694b3e384114cdd4b7e"
+      "address": "0x0ef65ae7E22a74cE94368449f5F805218a219e4B",
+      "transactionHash": "0x150a17f3bde21eab6d82e6b8ebe02c92401b295d5b4bc332aeee32f41bf609b3"
     }
   },
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-10T23:36:18.283Z",
+  "updatedAt": "2021-07-11T00:38:18.894Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

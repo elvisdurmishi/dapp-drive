@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@truffle/hdwallet-provider": "^1.4.1",
     "bootstrap": "^5.0.2",
+    "dotenv": "^10.0.0",
     "ipfs-http-client": "^50.1.2",
+    "path": "^0.12.7",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-drop-zone": "^4.3.2",

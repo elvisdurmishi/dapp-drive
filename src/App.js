@@ -101,9 +101,9 @@ class App extends Component {
       <div className="d-flex">
         <img src={setupMetamask} className="w-50" alt="banner"></img>
         <div className="d-flex flex-column align-items-center justify-content-center w-50">
-          <h1>Download Metamask</h1>
-          <p>You must have Metamask to use this Dapp. You can download Metamask <a target="_blank" rel="noopener noreferrer" href="https://metamask.io/">here.</a></p>
-          <p>Please reload this window after you downloaded and installed Metamask.</p>
+          <h1>Shkarkoni Metamask</h1>
+          <p>Ju duhet qe te keni shkarkuar Metamask patjeter per te perdorur kete aplikacion te deceltralizuar. Ju mund te shkarkoni Metamask <a target="_blank" rel="noopener noreferrer" href="https://metamask.io/">ketu.</a></p>
+          <p>Pasi te shkarkoni dhe instaloni Metamask, rifreskoni dritaren.</p>
         </div>
       </div>
     )
@@ -157,8 +157,8 @@ class App extends Component {
           <div className="d-flex">
             <img src={metamaskConfigBanner} className="w-50" alt="banner"></img>
             <div className="d-flex flex-column align-items-center justify-content-center w-50">
-              <h1>Metamask Config</h1>
-              <p>Please configure your metamask with one of your accounts in Rinkeby Test Network</p>
+              <h1>Konfigurimi i Metamask</h1>
+              <p>Ju lutem konfiguroni Metamask me nje nga portofolet tuaja ne rrjetin "Rinkeby Test Network"</p>
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ class App extends Component {
               </thead>
               <tbody>
                 {tableState === "failed-files" && this.renderErrorLoadingFiles()}
-                {dappDrive.length === 0 && this.renderNoFiles()}
+                {dappDrive.length === 0 && tableState !== "failed-files" && this.renderNoFiles()}
                 {this.renderFiles()}
               </tbody>
             </Table>
